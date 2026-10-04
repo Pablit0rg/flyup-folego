@@ -6,11 +6,11 @@ Implementação estrita da especificação. Todo texto em pt-BR, sem imagens ger
 
 1. **Landing (/)** — título "Quantos meses você aguenta se der o salto?", subtítulo (reserva ÷ custo de vida), "Como funciona" em 3 passos, seção "Seus números ficam com você", botão principal para /calculadora.
 2. **Calculadora (/calculadora)** — campos custo de vida mensal, reserva atual e (opcional) quanto guarda por mês, em R$.
-   - Meses de fôlego = reserva ÷ custo de vida, 1 casa decimal.
-   - Se fôlego >= 6: mostra "Você já tem 6 meses ou mais de fôlego." e nenhuma estimativa.
-   - Senão, se guardado por mês > 0: mostra estimativa (rótulo "estimativa") de meses até 6 meses de fôlego = ceil((6 × custo − reserva) ÷ guardado). Vazio ou zero: sem estimativa.
-   - Aviso fixo "Isto não é recomendação de investimento."
-   - Após o resultado: botão "Quer ajuda para montar seu plano de transição?" que abre o formulário (diálogo).
+  - Meses de fôlego = reserva ÷ custo de vida, 1 casa decimal.
+  - Se fôlego >= 6: mostra "Você já tem 6 meses ou mais de fôlego." e nenhuma estimativa.
+  - Senão, se guardado por mês > 0: mostra estimativa (rótulo "estimativa") de meses até 6 meses de fôlego = ceil((6 × custo − reserva) ÷ guardado). Vazio ou zero: sem estimativa.
+  - Aviso fixo "Isto não é recomendação de investimento."
+  - Após o resultado: botão "Quer ajuda para montar seu plano de transição?" que abre o formulário (diálogo).
 3. **Formulário de contato** (diálogo dentro da calculadora) — nome, WhatsApp, carreira-alvo (opcional), consentimento obrigatório com o texto exato, honeypot invisível. Após salvar, abre `https://wa.me/<NUMERO>?text=<mensagem codificada>`.
 4. **Admin (/admin)** — login por e-mail e senha (sem cadastro), lista de leads com troca de status e campo único de observações, três contadores (cálculos, cliques de ajuda, leads).
 
@@ -18,18 +18,21 @@ Visual: mobile-first, fundo claro, azul-petróleo #0F3D4C como primária, verde 
 
 ## Banco de dados (Lovable Cloud)
 
-**`app_role`** (enum): `admin`.
+`**app_role**` (enum): `admin`.
 
-**`user_roles`** — `id`, `user_id` (ref. auth.users, cascade), `role`, único (user_id, role).
+`**user_roles**` — `id`, `user_id` (ref. auth.users, cascade), `role`, único (user_id, role).
+
 - RLS ligado. SELECT para `authenticated` apenas da própria linha (`user_id = auth.uid()`). Sem INSERT/UPDATE/DELETE para nenhum papel do app; só via painel/SQL.
 
-**Função `has_role(_user_id, _role)`** — `security definer`, `stable`, `search_path = public`; usada em todas as políticas de admin (evita recursão de RLS).
+**Função `has_role(_user_id, _role)**` — `security definer`, `stable`, `search_path = public`; usada em todas as políticas de admin (evita recursão de RLS).
 
-**`leads`** — `id`, `nome` (texto, 1–100), `whatsapp` (texto, 10–15 dígitos), `carreira_alvo` (texto opcional, até 100), `consentimento` (boolean, check = true), `status` (enum `lead_status`: novo, em_contato, acompanhando, descartado; padrão novo), `observacoes` (texto opcional), `created_at`. Nenhuma coluna financeira.
+`**leads**` — `id`, `nome` (texto, 1–100), `whatsapp` (texto, 10–15 dígitos), `carreira_alvo` (texto opcional, até 100), `consentimento` (boolean, check = true), `status` (enum `lead_status`: novo, em_contato, acompanhando, descartado; padrão novo), `observacoes` (texto opcional), `created_at`. Nenhuma coluna financeira.
+
 - INSERT para `anon` e `authenticated` com `WITH CHECK (consentimento = true AND status = 'novo' AND observacoes IS NULL)`.
 - SELECT e UPDATE apenas `has_role(auth.uid(), 'admin')`. Sem DELETE.
 
-**`eventos`** — `id`, `tipo` (check em 'calculo_feito', 'clique_ajuda', 'lead_enviado'), `created_at`. Nada além disso.
+`**eventos**` — `id`, `tipo` (check em 'calculo_feito', 'clique_ajuda', 'lead_enviado'), `created_at`. Nada além disso.
+
 - INSERT para `anon` e `authenticated` (check do tipo).
 - SELECT apenas admin. Sem UPDATE/DELETE.
 
@@ -59,4 +62,8 @@ Grants explícitos em cada tabela conforme as políticas (INSERT a anon; SELECT/
 - /admin: página client-side com cliente do navegador (RLS como o usuário); contadores via `count` com `head: true` por tipo de evento e total de leads.
 - Sessão: listener único no root; botão sair limpa cache e sessão.
 - Sem chaves no código; somente variáveis de ambiente fornecidas pelo Cloud.
-- head() próprio em /, /calculadora e /admin (admin com noindex).
+- head() próprio em /, /calculadora e /admin (admin com noindex). ## Ajustes de auditoria (obrigatórios)
+  - Calculadora: custo de vida mensal obrigatório e maior que zero; reserva obrigatória e maior ou igual a zero; valor guardado por mês, se informado, maior ou igual a zero. Com entrada inválida, mostrar mensagem de erro, não exibir resultado e não registrar o evento calculo_feito.
+  - WhatsApp do lead: aceitar o número digitado com ou sem máscara, remover tudo que não for dígito antes de validar e salvar; se vier com 10 ou 11 dígitos (DDD + número), prefixar 55. Validar o mesmo formato no cliente e na server function.
+  - Leads: permitir DELETE somente para administradores (has_role), com botão de excluir no /admin e confirmação, para atender pedido de eliminação do titular (LGPD).
+  - Observações: limite de 2000 caracteres.
