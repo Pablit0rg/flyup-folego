@@ -10,7 +10,8 @@ export type Resultado = {
 export function parseReais(v: string): number | null {
   const t = v.trim();
   if (t === "") return null;
-  const n = Number(t.replace(/\./g, "").replace(",", "."));
+  const norm = t.includes(",") ? t.replace(/\./g, "").replace(",", ".") : t;
+  const n = Number(norm);
   return Number.isFinite(n) ? n : NaN;
 }
 
