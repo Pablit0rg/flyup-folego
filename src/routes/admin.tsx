@@ -172,7 +172,7 @@ function Painel({ onSair }: { onSair: () => void }) {
   );
 }
 
-function Contador({ label, v }: { label: string; v?: number }) {
+function Contador({ label, v }: { label: string; v?: number | undefined }) {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <p className="text-sm text-muted-foreground">{label}</p>
