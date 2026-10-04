@@ -66,17 +66,17 @@ export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenCha
           <div className="space-y-1.5">
             <Label htmlFor="nome">Nome</Label>
             <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} maxLength={100} autoComplete="name" />
-            {erros.nome && <p className="text-sm text-destructive">{erros.nome}</p>}
+            {erros["nome"] && <p className="text-sm text-destructive">{erros["nome"]}</p>}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="whatsapp">WhatsApp (com DDD)</Label>
             <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} inputMode="tel" placeholder="(11) 91234-5678" autoComplete="tel" />
-            {erros.whatsapp && <p className="text-sm text-destructive">{erros.whatsapp}</p>}
+            {erros["whatsapp"] && <p className="text-sm text-destructive">{erros["whatsapp"]}</p>}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="carreira">Carreira-alvo (opcional)</Label>
             <Input id="carreira" value={carreira} onChange={(e) => setCarreira(e.target.value)} maxLength={100} placeholder="Ex.: desenvolvimento web, dados, UX" />
-            {erros.carreiraAlvo && <p className="text-sm text-destructive">{erros.carreiraAlvo}</p>}
+            {erros["carreiraAlvo"] && <p className="text-sm text-destructive">{erros["carreiraAlvo"]}</p>}
           </div>
           {/* Honeypot anti-spam: invisível para pessoas */}
           <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
@@ -87,7 +87,7 @@ export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenCha
             <Checkbox id="consent" checked={consent} onCheckedChange={(v) => setConsent(v === true)} className="mt-0.5" />
             <Label htmlFor="consent" className="text-sm font-normal leading-snug">{CONSENT_TEXT}</Label>
           </div>
-          {erros.consentimento && <p className="text-sm text-destructive">{erros.consentimento}</p>}
+          {erros["consentimento"] && <p className="text-sm text-destructive">{erros["consentimento"]}</p>}
           {erroGeral && <p className="text-sm text-destructive">{erroGeral}</p>}
           <Button type="submit" className="w-full" disabled={!consent || enviando}>
             {enviando ? "Enviando..." : "Enviar e abrir WhatsApp"}

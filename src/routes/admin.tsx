@@ -190,13 +190,19 @@ function LeadCard({ lead }: { lead: Lead }) {
     setSalvando(true);
     const { error } = await supabase.from("leads").update(patch).eq("id", lead.id);
     setSalvando(false);
-    if (error) return toast.error("Não foi possível salvar.");
+    if (error) {
+      toast.error("Não foi possível salvar.");
+      return;
+    }
     toast.success("Salvo.");
     qc.invalidateQueries({ queryKey: ["leads"] });
   }
   async function excluir() {
     const { error } = await supabase.from("leads").delete().eq("id", lead.id);
-    if (error) return toast.error("Não foi possível excluir.");
+    if (error) {
+      toast.error("Não foi possível excluir.");
+      return;
+    }
     toast.success("Lead excluído.");
     qc.invalidateQueries({ queryKey: ["leads"] });
     qc.invalidateQueries({ queryKey: ["contadores"] });

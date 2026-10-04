@@ -29,7 +29,7 @@ function Calculadora() {
   const [custo, setCusto] = useState("");
   const [reserva, setReserva] = useState("");
   const [guardado, setGuardado] = useState("");
-  const [erros, setErros] = useState<Record<string, string>>({});
+  const [erros, setErros] = useState<Partial<Record<"custo" | "reserva" | "guardado", string>>>({});
   const [res, setRes] = useState<Resultado | null>(null);
   const [aberto, setAberto] = useState(false);
 
@@ -38,7 +38,7 @@ function Calculadora() {
     const c = parseReais(custo);
     const r = parseReais(reserva);
     const g = parseReais(guardado);
-    const err: Record<string, string> = {};
+    const err: Partial<Record<"custo" | "reserva" | "guardado", string>> = {};
     if (c == null || Number.isNaN(c) || c <= 0) err.custo = "Informe um custo de vida maior que zero.";
     if (r == null || Number.isNaN(r) || r < 0) err.reserva = "Informe uma reserva igual ou maior que zero.";
     if (g != null && (Number.isNaN(g) || g < 0)) err.guardado = "Informe um valor igual ou maior que zero.";
@@ -108,7 +108,7 @@ function Calculadora() {
   );
 }
 
-function Campo(props: { id: string; label: string; value: string; onChange: (v: string) => void; erro?: string }) {
+function Campo(props: { id: string; label: string; value: string; onChange: (v: string) => void; erro?: string | undefined }) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={props.id}>{props.label}</Label>
