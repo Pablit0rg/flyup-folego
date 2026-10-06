@@ -46,7 +46,8 @@ function Calculadora() {
       setRes(null);
       return;
     }
-    setRes(calcular(c!, r!, g));
+    if (c == null || r == null) return;
+    setRes(calcular(c, r, g));
     registrarEvento("calculo_feito");
   }
 

@@ -50,7 +50,7 @@ function Index() {
               <Link to="/calculadora">Calcular meus meses de fôlego</Link>
             </Button>
           </div>
-          <div className="min-w-0" aria-hidden={undefined}>
+          <div className="min-w-0">
             <ResultCard resultado={exampleResult} example />
           </div>
         </section>
