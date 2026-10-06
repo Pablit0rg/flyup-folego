@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { ResultCard } from "@/components/ResultCard";
 import { SiteHeader } from "@/components/SiteHeader";
+import { calcular } from "@/lib/calc";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,22 +24,35 @@ const passos = [
   { n: "3", t: "Veja seus meses de fôlego", d: "Por quanto tempo sua reserva cobre seus gastos." },
 ];
 
+export const EXAMPLE_INPUTS = {
+  custo: 4_000,
+  reserva: 12_000,
+  guardado: 1_000,
+} as const;
+
+const exampleResult = calcular(EXAMPLE_INPUTS.custo, EXAMPLE_INPUTS.reserva, EXAMPLE_INPUTS.guardado);
+
 function Index() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-5">
-        <section className="py-14 sm:py-20">
-          <h1 className="font-display text-4xl font-bold leading-tight text-primary sm:text-5xl">
-            Quantos meses você aguenta se der o salto?
-          </h1>
-          <p className="mt-5 text-lg text-muted-foreground">
-            O FlyUp mede os meses de fôlego de quem está mudando de carreira para tecnologia: a sua reserva
-            dividida pelo seu custo de vida. Um número simples para planejar a transição com mais calma.
-          </p>
-          <Button asChild size="lg" className="mt-8 w-full sm:w-auto">
-            <Link to="/calculadora">Calcular meus meses de fôlego</Link>
-          </Button>
+        <section className="grid gap-8 py-8 sm:py-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-center lg:gap-12 lg:py-20">
+          <div className="min-w-0">
+            <h1 className="font-display text-4xl font-bold leading-tight text-primary sm:text-5xl">
+              Quantos meses você aguenta se der o salto?
+            </h1>
+            <p className="mt-5 text-lg text-muted-foreground">
+              O FlyUp mede os meses de fôlego de quem está mudando de carreira para tecnologia: a sua reserva
+              dividida pelo seu custo de vida. Um número simples para planejar a transição com mais calma.
+            </p>
+            <Button asChild size="lg" className="mt-8 w-full sm:w-auto">
+              <Link to="/calculadora">Calcular meus meses de fôlego</Link>
+            </Button>
+          </div>
+          <div className="min-w-0">
+            <ResultCard resultado={exampleResult} example />
+          </div>
         </section>
 
         <section className="pb-14">
